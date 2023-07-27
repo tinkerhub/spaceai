@@ -4,6 +4,11 @@ from core.routes import router
 from core.telegram import check_telegram_webhook
 app = FastAPI()
 
+from dotenv import load_dotenv
+
+load_dotenv("ops/.env")
+
+
 app.include_router(router.router)
 
 if __name__ == "__main__":
