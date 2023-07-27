@@ -1,0 +1,7 @@
+.config
+pycache
+env.dev.sh
+/data
+.env
+*.cpython-*
+node_modules

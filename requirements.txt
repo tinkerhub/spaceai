@@ -1,0 +1,8 @@
+openai
+fastapi
+requests
+weaviate
+langchain
+pydantic
+redis
+uvicorn
