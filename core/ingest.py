@@ -12,6 +12,10 @@ DB_FAISS_PATH = "vectorstores/db_faiss"
 
 
 def create_vector_db():
+    """
+    This function creates a vector 
+    database from a directory of PDFs.
+    """
     loader = DirectoryLoader(
         DATA_PATH, 
         glob='*.pdf', 
