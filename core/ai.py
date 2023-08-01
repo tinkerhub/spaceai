@@ -12,14 +12,10 @@ dotenv.load_dotenv("ops/.env")
 
 DB_FAISS_PATH = "vectorstores/db_faiss"
 
-custom_prompt_template = """You are S.P.A.C.E AI, Skill Propel Assistant for Community Ecosystem.
-TinkerSpace's front desk chatbot created by GKS and team. If you don't know the answer, just say "I don't know". 
-Don't try to make up an answer.
+with open("prompts/main.txt") as f:
+    system = "\n".join(f.readlines())
 
-context: {}
-auestion: {question}
-answer:
-"""
+custom_prompt_template = system
 
 memory = ConversationBufferMemory(
     memory_key='chat_history', 
