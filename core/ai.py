@@ -10,9 +10,13 @@ import os
 import dotenv
 dotenv.load_dotenv("ops/.env")
 
-DB_FAISS_PATH = "vectorstores/db_faiss"
+DB_FAISS_PATH = os.getenv('DB_FAISS_PATH')
 
-with open("prompts/main.txt") as f:
+MAIN_PROMPT_PATH = os.environ.get('MAIN_PROMPT_PATH')
+
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
+with open(MAIN_PROMPT_PATH) as f:
     system = "\n".join(f.readlines())
 
 custom_prompt_template = system
@@ -38,7 +42,7 @@ def load_llm() -> OpenAI:
     This function loads the OpenAI LLM
     """
     llm = OpenAI(
-        os.getenv('OPENAI_API_KEY'),
+        OPENAI_API_KEY,
         temperature=0.5,
     )
     return llm
@@ -71,7 +75,7 @@ def qa_bot(memory: ConversationBufferMemory) -> ConversationalRetrievalChain:
     This function creates a QA bot
     """
     emebddings = OpenAIEmbeddings(
-        os.getenv('OPENAI_API_KEY'),
+        OPENAI_API_KEY
     )
     db = FAISS.load_local(DB_FAISS_PATH, emebddings)
     llm = load_llm()

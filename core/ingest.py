@@ -7,7 +7,7 @@ import os
 
 dotenv.load_dotenv("ops/.env")
 DATA_PATH = "data/"
-DB_FAISS_PATH = "vectorstores/db_faiss"
+DB_FAISS_PATH = os.environ.get('DB_FAISS_PATH')
 
 
 
