@@ -30,7 +30,7 @@ cp ops/.env.example ops/.env
 ```
 - Create a telegram bot and put the api key in ops/.env file
 - Install the dependencies using `pip install -r requirements.txt`
-- Upload pdf files to `/data` folder
+- Create the folder `data` at the root and upload pdf files to `/data` folder
 - Run 
 ```python
 python core/ingest.py
