@@ -1,8 +1,9 @@
 openai
 fastapi
 requests
-weaviate
 langchain
 pydantic
 redis
 uvicorn
+pyTelegramBotAPI
+faiss_cpu
