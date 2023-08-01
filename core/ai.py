@@ -24,6 +24,9 @@ memory = ConversationBufferMemory(
 )
 
 def set_custom_prompt() -> PromptTemplate:
+    """
+    This function creates a custom prompt
+    """
     prompt = PromptTemplate(
         custom_prompt_template,
         input_variables=["context", "question"]
@@ -31,6 +34,9 @@ def set_custom_prompt() -> PromptTemplate:
     return prompt
 
 def load_llm() -> OpenAI:
+    """
+    This function loads the OpenAI LLM
+    """
     llm = OpenAI(
         os.getenv('OPENAI_API_KEY'),
         temperature=0.5,
@@ -43,6 +49,9 @@ def retrival_qa_chain(
         db: FAISS, 
         memory: ConversationBufferMemory
 ) -> ConversationalRetrievalChain:
+    """
+    This function creates a ConversationalRetrievalChain
+    """
     qa_chain = ConversationalRetrievalChain.from_llm(
         llm,
         chain_type="stuff",
@@ -58,6 +67,9 @@ def retrival_qa_chain(
     return qa_chain
 
 def qa_bot(memory: ConversationBufferMemory) -> ConversationalRetrievalChain:
+    """
+    This function creates a QA bot
+    """
     emebddings = OpenAIEmbeddings(
         os.getenv('OPENAI_API_KEY'),
     )
@@ -70,6 +82,9 @@ def qa_bot(memory: ConversationBufferMemory) -> ConversationalRetrievalChain:
     return qa
 
 def query_result(query: str, messages: dict) -> tuple:
+    """
+    This function returns the answer and messages
+    """
     chat_history = ChatMessageHistory(
         messages=messages
     )
