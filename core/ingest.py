@@ -9,9 +9,12 @@ dotenv.load_dotenv("ops/.env")
 DATA_PATH = "data/"
 DB_FAISS_PATH = os.environ.get('DB_FAISS_PATH')
 
+embeddings = OpenAIEmbeddings(
+    os.getenv('OPENAI_API_KEY'),
+)
 
 
-def create_vector_db():
+def create_vector_db(embeddings=embeddings):
     """
     This function creates a vector 
     database from a directory of PDFs.
@@ -27,10 +30,6 @@ def create_vector_db():
         chunk_overlap=50
     )
     texts = splitter.split_documents(documents)
-
-    embeddings = OpenAIEmbeddings(
-        os.getenv('OPENAI_API_KEY'),
-    )
 
     db = FAISS.from_documents(texts, embeddings)
     db.save_local(DB_FAISS_PATH)
