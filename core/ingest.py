@@ -28,6 +28,10 @@ tinkerhub_urls = ['https://www.tinkerhub.org/',
 
 
 def get_tinkerhub_docs(tinkerhub_urls):
+    """
+    This function gets the docs from
+    the tinkerhub web pages.
+    """
     docs = []
     for url in tinkerhub_urls:
         loader = UnstructuredURLLoader([url])
@@ -41,6 +45,10 @@ def get_tinkerhub_docs(tinkerhub_urls):
     return docs
 
 def get_txt_docs():
+    """
+    This function gets the docs from
+    the txt files in data folder.
+    """
     try:
         loader = DirectoryLoader(
             DATA_PATH, 
@@ -60,6 +68,10 @@ def get_txt_docs():
 
 
 def get_pdf_docs():
+    """
+    This function gets the docs from
+    the pdf files in data folder.
+    """
     try:
         loader = DirectoryLoader(
             DATA_PATH, 
@@ -78,6 +90,10 @@ def get_pdf_docs():
     return docs
 
 def get_git_docs(url: str):
+    """
+    This function gets the docs from
+    a git repo and save it under /repos/.
+    """
     name = url.split("/")[-1]
     try:
         loader = GitLoader(
@@ -100,7 +116,8 @@ def get_git_docs(url: str):
 def create_vector_db(docs):
     """
     This function creates a vector 
-    database from a directory of PDFs.
+    database from docs from various
+    sources.
     """
     db = FAISS.from_documents(docs, embeddings)
     db.save_local(DB_FAISS_PATH)
