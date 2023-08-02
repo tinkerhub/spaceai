@@ -23,7 +23,8 @@ embeddings = OpenAIEmbeddings(
 tinkerhub_urls = ['https://www.tinkerhub.org/',
  'https://www.tinkerhub.org/learn',
  'https://www.tinkerhub.org/career-initiative',
- 'https://www.tinkerhub.org/tinkerspace']
+ 'https://www.tinkerhub.org/tinkerspace',
+ 'https://www.tinkerhub.org/contact']
 
 
 def get_tinkerhub_docs(tinkerhub_urls):
