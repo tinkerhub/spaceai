@@ -1,7 +1,7 @@
 openai==0.27.8
 fastapi==0.99.1
 requests==2.31.0
-langchain==0.0.23
+langchain==0.0.249
 pydantic==1.10.9
 redis==4.6.0
 uvicorn==0.22.0
