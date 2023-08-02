@@ -11,7 +11,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 
-token = os.getenv('TELEGRAM_TOKEN')
+token = os.getenv('TELEGRAM_BOT_TOKEN')
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -25,7 +25,7 @@ async def respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
 
     history = memory.get(chat_id, [])
-    response, history = query_result(text)
+    response, history = query_result(text, messages=history)
     memory[chat_id] = history
 
     await context.bot.send_message(chat_id=chat_id, text=response)

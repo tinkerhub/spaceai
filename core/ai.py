@@ -10,9 +10,13 @@ import os
 import dotenv
 dotenv.load_dotenv("ops/.env")
 
-DB_FAISS_PATH = "vectorstores/db_faiss"
+DB_FAISS_PATH = os.getenv('DB_FAISS_PATH')
 
-with open("prompts/main.txt") as f:
+MAIN_PROMPT_PATH = os.environ.get('MAIN_PROMPT_PATH')
+
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
+with open(MAIN_PROMPT_PATH) as f:
     system = "\n".join(f.readlines())
 
 custom_prompt_template = system
@@ -28,7 +32,7 @@ def set_custom_prompt() -> PromptTemplate:
     This function creates a custom prompt
     """
     prompt = PromptTemplate(
-        custom_prompt_template,
+        template=custom_prompt_template,
         input_variables=["context", "question"]
     )
     return prompt
@@ -38,8 +42,8 @@ def load_llm() -> OpenAI:
     This function loads the OpenAI LLM
     """
     llm = OpenAI(
-        os.getenv('OPENAI_API_KEY'),
-        temperature=0.5,
+        openai_api_key=OPENAI_API_KEY,
+        temperature=0.1,
     )
     return llm
 
@@ -53,38 +57,30 @@ def retrival_qa_chain(
     This function creates a ConversationalRetrievalChain
     """
     qa_chain = ConversationalRetrievalChain.from_llm(
-        llm,
-        chain_type="stuff",
+        llm=llm,
         retriever=db.as_retriever(
             search_kwargs={
                 "k": 2
             },
         ),
-        return_messages=True,
         memory=memory,
         combine_docs_chain_kwargs={'prompt': prompt}
     )
     return qa_chain
 
-def qa_bot(memory: ConversationBufferMemory) -> ConversationalRetrievalChain:
-    """
-    This function creates a QA bot
-    """
-    emebddings = OpenAIEmbeddings(
-        os.getenv('OPENAI_API_KEY'),
+emebddings = OpenAIEmbeddings(
+        openai_api_key=OPENAI_API_KEY
     )
-    db = FAISS.load_local(DB_FAISS_PATH, emebddings)
-    llm = load_llm()
-    qa_prompt = set_custom_prompt()
-    qa = retrival_qa_chain(
-        llm, qa_prompt, db, memory
-    )
-    return qa
+db = FAISS.load_local(DB_FAISS_PATH, emebddings)
+llm = load_llm()
 
-def query_result(query: str, messages: dict) -> tuple:
+qa_prompt = set_custom_prompt()
+
+def query_result(query: str, messages: list) -> tuple:
     """
     This function returns the answer and messages
     """
+    messages = messages_from_dict(messages)
     chat_history = ChatMessageHistory(
         messages=messages
     )
@@ -94,7 +90,9 @@ def query_result(query: str, messages: dict) -> tuple:
             return_messages=True,
             output_key='answer'
     )
-    qa = qa_bot(memory=memory)
+    qa = retrival_qa_chain(
+        llm, qa_prompt, db, memory
+    )
     result = qa(
         {'question': query}
     )
