@@ -4,3 +4,4 @@ env.dev.sh
 .env
 *.cpython-*
 node_modules
+/repos
