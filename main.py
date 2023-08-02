@@ -3,11 +3,6 @@ from fastapi import FastAPI
 from core.routes import router
 app = FastAPI()
 
-from dotenv import load_dotenv
-
-load_dotenv("ops/.env")
-
-
 app.include_router(router.router)
 
 if __name__ == "__main__":

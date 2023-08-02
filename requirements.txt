@@ -9,4 +9,3 @@ pyTelegramBotAPI==4.12.0
 faiss-cpu==1.7.4
 python-magic==0.4.27
 unstructured==0.9.0
-dotenv
