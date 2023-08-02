@@ -6,4 +6,6 @@ pydantic
 redis
 uvicorn
 pyTelegramBotAPI
-faiss_cpu
+faiss-cpu
+python-magic
+unstructured
