@@ -2,7 +2,7 @@ openai
 fastapi
 requests
 langchain
-pydantic
+pydantic==1.10.9
 redis
 uvicorn
 pyTelegramBotAPI
