@@ -9,10 +9,8 @@ from langchain.document_loaders import (
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 import traceback
-import dotenv
 import os
 
-dotenv.load_dotenv("ops/.env")
 DATA_PATH = "data/"
 DB_FAISS_PATH = os.environ.get('DB_FAISS_PATH')
 

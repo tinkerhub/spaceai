@@ -8,8 +8,6 @@ from telegram.ext import (
     filters
 )
 import os
-import dotenv
-dotenv.load_dotenv()
 
 token = os.getenv('TELEGRAM_BOT_TOKEN')
 
