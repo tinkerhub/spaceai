@@ -9,7 +9,10 @@ from langchain.document_loaders import (
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 import traceback
+import dotenv
 import os
+
+dotenv.load_dotenv("ops/.env")
 
 DATA_PATH = "data/"
 DB_FAISS_PATH = os.environ.get('DB_FAISS_PATH')
@@ -125,6 +128,6 @@ if __name__ == "__main__":
     docs = get_tinkerhub_docs(tinkerhub_urls)
     docs.extend(get_pdf_docs())
     docs.extend(get_txt_docs())
-    url = "https://github.com/tinkerhub/maker-station"
-    docs.extend(get_git_docs(url))
+    #url = "https://github.com/tinkerhub/maker-station"
+    #docs.extend(get_git_docs(url))
     create_vector_db(docs)

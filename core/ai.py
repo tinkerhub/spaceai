@@ -2,13 +2,20 @@ from langchain.prompts import PromptTemplate
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories.in_memory import ChatMessageHistory
+from sklearn.metrics.pairwise import cosine_similarity
 from langchain.schema import messages_from_dict, messages_to_dict
+from utils.resources import retrieve_learning_topics, retrieve_url
+import numpy as np
+import json
 import os
 
 import dotenv
+
+with open("data/dummy-lp.json") as f:
+    learning_paths = json.load(f)
 
 dotenv.load_dotenv("ops/.env")
 
@@ -103,6 +110,29 @@ def query_result(query: str, messages: list) -> tuple:
         qa.memory.chat_memory.messages
     )
     return answer, messages
+
+def classify(query, topics):
+    embed_topics = np.load("data/embed_topics.npy")
+    embed = emebddings.embed_documents([query])
+    embed = np.array(embed[0]).reshape(1, -1)
+    scores = cosine_similarity(embed, embed_topics)
+    arg = np.argmax(scores)
+    return topics[arg], scores[0][arg]
+
+
+def learning_path_query(query):
+    data = learning_paths
+    topics = retrieve_learning_topics(data)
+    topic, score = classify(query, topics)
+    if score > 0.5:
+        topic = topic.split("learn ")[1]
+        url = retrieve_url(topic, data)
+        context = f"This is the maker station learning path for {topic} by TinkerHub. {url}"
+        llm_chain = LLMChain(llm=llm, prompt=qa_prompt)
+        response = llm_chain(inputs={"context": context, "question": query})
+        return response.get("text")
+    return None
+    
 
 
 
