@@ -8,6 +8,10 @@ from langchain.memory.chat_message_histories.in_memory import ChatMessageHistory
 from langchain.schema import messages_from_dict, messages_to_dict
 import os
 
+import dotenv
+
+dotenv.load_dotenv("ops/.env")
+
 DB_FAISS_PATH = os.getenv('DB_FAISS_PATH')
 
 MAIN_PROMPT_PATH = os.environ.get('MAIN_PROMPT_PATH')
