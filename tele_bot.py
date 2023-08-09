@@ -1,5 +1,5 @@
 import logging
-from core.ai import query_result
+from core.ai import chat
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -8,6 +8,9 @@ from telegram.ext import (
     filters
 )
 import os
+import dotenv
+
+dotenv.load_dotenv("ops/.env")
 
 token = os.getenv('TELEGRAM_BOT_TOKEN')
 
@@ -21,11 +24,9 @@ memory = {}
 async def respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     chat_id = update.effective_chat.id
-
     history = memory.get(chat_id, [])
-    response, history = query_result(text, messages=history)
+    response, history = chat(text, history)
     memory[chat_id] = history
-
     await context.bot.send_message(chat_id=chat_id, text=response)
 
 if __name__ == '__main__':
