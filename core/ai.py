@@ -95,7 +95,7 @@ def compose_memory(messages: list) -> ConversationBufferMemory:
     )
     memory = ConversationBufferMemory(
             chat_memory=chat_history,
-            memory_key='chat_memory',
+            memory_key='chat_history',
             return_messages=True,
             output_key='answer'
     )
@@ -135,24 +135,27 @@ def is_learning_path_query(query):
     data = learning_paths
     topics = retrieve_learning_topics(data)
     topic, score = classify(query, topics)
+    topic = topic.split("learn ")[1]
     if score > 0.8:
         return True, topic
     return False, None
 
-def learning_path_chat(topic):
+def learning_path_chat(query, topic, messages):
+    memory = compose_memory(messages)
     data = learning_paths
     url = retrieve_url(topic, data)
     context = compose_context(topic, url)
+    #need to handle memory
     llm_chain = LLMChain(llm=llm, prompt=qa_prompt)
-    response = llm_chain(inputs={"context": context, "question": "What is this?"})
-    return response.get("text")
+    response = llm_chain(inputs={"context": context, "question": query})
+    return response.get("text"), messages
 
 
 def chat(query, messages):
     is_lp_query, topic = is_learning_path_query(query)
     if is_lp_query:
-        answer = learning_path_chat(topic)
-        messages.append({"text": answer, "is_user": False})
+        answer, messages_ = learning_path_chat(query, topic, messages=messages)
+        messages.extend(messages_)
         return answer, messages
     answer, messages = normal_chat(query, messages)
     return answer, messages
