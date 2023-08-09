@@ -10,6 +10,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 import traceback
 import dotenv
+import json
 import os
 
 dotenv.load_dotenv("ops/.env")
@@ -20,6 +21,9 @@ DB_FAISS_PATH = os.environ.get('DB_FAISS_PATH')
 embeddings = OpenAIEmbeddings(
     openai_api_key=os.environ.get('OPENAI_API_KEY')
 )
+
+with open("data/dummy-lp.json") as f:
+    learning_paths = json.load(f)
 
 tinkerhub_urls = ['https://www.tinkerhub.org/',
  'https://www.tinkerhub.org/learn',
@@ -114,6 +118,15 @@ def get_git_docs(url: str):
         docs = []
     return docs
 
+def get_learning_path_docs(learning_paths):
+    docs = []
+    for topic, url in learning_paths.items():
+        docs.append(
+            f"This is the maker station learning path for {topic} by TinkerHub. {url}"
+        )
+    return docs
+        
+
 def create_vector_db(docs):
     """
     This function creates a vector 
@@ -122,6 +135,7 @@ def create_vector_db(docs):
     """
     db = FAISS.from_documents(docs, embeddings)
     db.save_local(DB_FAISS_PATH)
+    return db
 
 
 if __name__ == "__main__":
@@ -130,4 +144,5 @@ if __name__ == "__main__":
     docs.extend(get_txt_docs())
     #url = "https://github.com/tinkerhub/maker-station"
     #docs.extend(get_git_docs(url))
-    create_vector_db(docs)
+    db = create_vector_db(docs)
+    db.add_texts(get_learning_path_docs(learning_paths))

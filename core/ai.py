@@ -85,9 +85,9 @@ llm = load_llm()
 
 qa_prompt = set_custom_prompt()
 
-def query_result(query: str, messages: list) -> tuple:
+def compose_memory(messages: list) -> ConversationBufferMemory:
     """
-    This function returns the answer and messages
+    This function composes a memory
     """
     messages = messages_from_dict(messages)
     chat_history = ChatMessageHistory(
@@ -95,10 +95,17 @@ def query_result(query: str, messages: list) -> tuple:
     )
     memory = ConversationBufferMemory(
             chat_memory=chat_history,
-            memory_key='chat_history',
+            memory_key='chat_memory',
             return_messages=True,
             output_key='answer'
     )
+    return memory
+
+def normal_chat(query: str, messages: list) -> tuple:
+    """
+    This function returns the answer and messages
+    """
+    memory = compose_memory(messages)
     qa = retrival_qa_chain(
         llm, qa_prompt, db, memory
     )
@@ -112,6 +119,7 @@ def query_result(query: str, messages: list) -> tuple:
     return answer, messages
 
 def classify(query, topics):
+
     embed_topics = np.load("data/embed_topics.npy")
     embed = emebddings.embed_documents([query])
     embed = np.array(embed[0]).reshape(1, -1)
@@ -119,19 +127,35 @@ def classify(query, topics):
     arg = np.argmax(scores)
     return topics[arg], scores[0][arg]
 
+def compose_context(topic, url):
+    context = f"This is the maker station learning path for {topic} by TinkerHub. {url}"
+    return context
 
-def learning_path_query(query):
+def is_learning_path_query(query):
     data = learning_paths
     topics = retrieve_learning_topics(data)
     topic, score = classify(query, topics)
-    if score > 0.5:
-        topic = topic.split("learn ")[1]
-        url = retrieve_url(topic, data)
-        context = f"This is the maker station learning path for {topic} by TinkerHub. {url}"
-        llm_chain = LLMChain(llm=llm, prompt=qa_prompt)
-        response = llm_chain(inputs={"context": context, "question": query})
-        return response.get("text")
-    return None
+    if score > 0.8:
+        return True, topic
+    return False, None
+
+def learning_path_chat(topic):
+    data = learning_paths
+    url = retrieve_url(topic, data)
+    context = compose_context(topic, url)
+    llm_chain = LLMChain(llm=llm, prompt=qa_prompt)
+    response = llm_chain(inputs={"context": context, "question": "What is this?"})
+    return response.get("text")
+
+
+def chat(query, messages):
+    is_lp_query, topic = is_learning_path_query(query)
+    if is_lp_query:
+        answer = learning_path_chat(topic)
+        messages.append({"text": answer, "is_user": False})
+        return answer, messages
+    answer, messages = normal_chat(query, messages)
+    return answer, messages
     
 
 

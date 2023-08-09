@@ -1,5 +1,5 @@
 import logging
-from core.ai import query_result, get_learning_path, learning_path_query
+from core.ai import chat
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -24,13 +24,9 @@ memory = {}
 async def respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     chat_id = update.effective_chat.id
-
-    response = learning_path_query(text)
-    if not response:
-        history = memory.get(chat_id, [])
-        response, history = query_result(text, messages=history)
-        memory[chat_id] = history
-
+    history = memory.get(chat_id, [])
+    response, history = chat(text, history)
+    memory[chat_id] = history
     await context.bot.send_message(chat_id=chat_id, text=response)
 
 if __name__ == '__main__':
