@@ -7,6 +7,7 @@ from telegram.ext import (
     MessageHandler, 
     filters
 )
+from core.db import set_redis, get_redis_value
 import os
 import dotenv
 
@@ -19,14 +20,17 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-memory = {}
-
 async def respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     chat_id = update.effective_chat.id
-    history = memory.get(chat_id, [])
-    response, history = chat(text, history)
-    memory[chat_id] = history
+    
+    history = get_redis_value(chat_id)
+    if not history:
+        history = []
+        set_redis(chat_id, history, expire=1800)
+    response, history = query_result(text, messages=history)
+    set_redis(chat_id, history)
+    
     await context.bot.send_message(chat_id=chat_id, text=response)
 
 if __name__ == '__main__':
