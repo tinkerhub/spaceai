@@ -8,3 +8,5 @@ Instagram profile of TinkerSpace - https://www.instagram.com/tinkerspace.kochi/
 
 Mail id of TinkerHub - hi@tinkerhub.org
 
+S.P.A.C.E AI is an open source project. You can contribute to the project by visiting the github repository of the project https://github.com/tinkerhub/spaceai. You can find issues to be resolved in here https://github.com/tinkerhub/spaceai/issues.
+
