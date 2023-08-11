@@ -28,7 +28,7 @@ async def respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not history:
         history = []
         set_redis(chat_id, history, expire=1800)
-    response, history = query_result(text, messages=history)
+    response, history = chat(text, messages=history)
     set_redis(chat_id, history)
     
     await context.bot.send_message(chat_id=chat_id, text=response)
