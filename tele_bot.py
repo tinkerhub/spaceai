@@ -1,5 +1,5 @@
 import logging
-from core.ai import query_result
+from core.ai import chat
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -23,13 +23,14 @@ logging.basicConfig(
 async def respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     chat_id = update.effective_chat.id
+    
     history = get_redis_value(chat_id)
     if not history:
         history = []
         set_redis(chat_id, history, expire=1800)
     response, history = query_result(text, messages=history)
     set_redis(chat_id, history)
-
+    
     await context.bot.send_message(chat_id=chat_id, text=response)
 
 if __name__ == '__main__':

@@ -1,0 +1,22 @@
+{
+    "essentials": "https://th-makerstations.netlify.app/docs/essentials/#-essentials",
+    "react": "https://th-makerstations.netlify.app/docs/web-dev/frontend/frameworks/react-js/",
+    "python": "https://th-makerstations.netlify.app/docs/web-dev/backend/languages/python/",
+    "javascript": "https://th-makerstations.netlify.app/docs/web-dev/backend/languages/javascript/",
+    "django": "https://th-makerstations.netlify.app/docs/web-dev/backend/frameworks/python-based/django/",
+    "flask": "https://th-makerstations.netlify.app/docs/web-dev/backend/frameworks/python-based/flask/",
+    "node": "https://th-makerstations.netlify.app/docs/web-dev/backend/frameworks/js-based/node-js/",
+    "machine learning": "https://th-makerstations.netlify.app/docs/ai/machinelearning/",
+    "docker": "https://th-makerstations.netlify.app/docs/devops/docker/",
+    "blockchain": "https://th-makerstations.netlify.app/docs/others/blockchain/",
+    "web basics": "https://th-makerstations.netlify.app/docs/web-dev/web-101/",
+    "typescript": "https://th-makerstations.netlify.app/docs/web-dev/frontend/languages/typescript/",
+    "go": "https://th-makerstations.netlify.app/docs/web-dev/backend/languages/go/",
+    "firebase": "https://th-makerstations.netlify.app/docs/web-dev/backend/databases/firebase/",
+    "mongo db": "https://th-makerstations.netlify.app/docs/web-dev/backend/databases/mongodb/",
+    "fast api": "https://th-makerstations.netlify.app/docs/web-dev/backend/apis/fast-api/",
+    "flutter": "https://th-makerstations.netlify.app/docs/app-dev/flutter/",
+    "serverless": "https://th-makerstations.netlify.app/docs/devops/serverless/getting-started/",
+    "devops": "https://th-makerstations.netlify.app/docs/devops/serverless/getting-started/",
+    "vue": "https://th-makerstations.netlify.app/docs/web-dev/frontend/frameworks/vue-js/"
+}

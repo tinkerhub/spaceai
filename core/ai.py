@@ -2,13 +2,20 @@ from langchain.prompts import PromptTemplate
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.memory import ConversationBufferMemory
 from langchain.memory.chat_message_histories.in_memory import ChatMessageHistory
+from sklearn.metrics.pairwise import cosine_similarity
 from langchain.schema import messages_from_dict, messages_to_dict
+from utils.resources import retrieve_learning_topics, retrieve_url
+import numpy as np
+import json
 import os
 
 import dotenv
+
+with open("data/dummy-lp.json") as f:
+    learning_paths = json.load(f)
 
 dotenv.load_dotenv("ops/.env")
 
@@ -78,9 +85,9 @@ llm = load_llm()
 
 qa_prompt = set_custom_prompt()
 
-def query_result(query: str, messages: list) -> tuple:
+def compose_memory(messages: list) -> ConversationBufferMemory:
     """
-    This function returns the answer and messages
+    This function composes a memory
     """
     messages = messages_from_dict(messages)
     chat_history = ChatMessageHistory(
@@ -92,6 +99,13 @@ def query_result(query: str, messages: list) -> tuple:
             return_messages=True,
             output_key='answer'
     )
+    return memory
+
+def normal_chat(query: str, messages: list) -> tuple:
+    """
+    This function returns the answer and messages
+    """
+    memory = compose_memory(messages)
     qa = retrival_qa_chain(
         llm, qa_prompt, db, memory
     )
@@ -103,6 +117,49 @@ def query_result(query: str, messages: list) -> tuple:
         qa.memory.chat_memory.messages
     )
     return answer, messages
+
+def classify(query, topics):
+
+    embed_topics = np.load("data/embed_topics.npy")
+    embed = emebddings.embed_documents([query])
+    embed = np.array(embed[0]).reshape(1, -1)
+    scores = cosine_similarity(embed, embed_topics)
+    arg = np.argmax(scores)
+    return topics[arg], scores[0][arg]
+
+def compose_context(topic, url):
+    context = f"This is the maker station learning path for {topic} by TinkerHub. {url}"
+    return context
+
+def is_learning_path_query(query):
+    data = learning_paths
+    topics = retrieve_learning_topics(data)
+    topic, score = classify(query, topics)
+    topic = topic.split("learn ")[1]
+    if score > 0.8:
+        return True, topic
+    return False, None
+
+def learning_path_chat(query, topic, messages):
+    memory = compose_memory(messages)
+    data = learning_paths
+    url = retrieve_url(topic, data)
+    context = compose_context(topic, url)
+    #need to handle memory
+    llm_chain = LLMChain(llm=llm, prompt=qa_prompt)
+    response = llm_chain(inputs={"context": context, "question": query})
+    return response.get("text"), messages
+
+
+def chat(query, messages):
+    is_lp_query, topic = is_learning_path_query(query)
+    if is_lp_query:
+        answer, messages_ = learning_path_chat(query, topic, messages=messages)
+        messages.extend(messages_)
+        return answer, messages
+    answer, messages = normal_chat(query, messages)
+    return answer, messages
+    
 
 
 
