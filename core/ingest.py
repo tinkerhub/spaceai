@@ -94,6 +94,27 @@ def get_pdf_docs():
         docs = []
     return docs
 
+def get_pdf_doc(filename: str):
+    """
+    This function gets the doc from
+    the pdf file name passed in data
+    folder
+    """
+    try:
+        loader = PyPDFLoader(
+            file_path=f"{DATA_PATH}{filename}"
+        )
+        documents = loader.load()
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50
+        )
+        docs = splitter.split_documents(documents)
+    except Exception:
+        print(traceback.format_exc())
+        docs = []
+    return docs
+
 def get_git_docs(url: str):
     """
     This function gets the docs from
@@ -136,6 +157,19 @@ def create_vector_db(docs):
     db = FAISS.from_documents(docs, embeddings)
     db.save_local(DB_FAISS_PATH)
     return db
+
+def update_vector_db(
+        docs: list, 
+        vector_path: str = DB_FAISS_PATH, 
+        emebddings: OpenAIEmbeddings = embeddings
+):
+    """
+    This function updates the vector db
+    """
+    db = FAISS.load_local(vector_path, emebddings)
+    print(docs)
+    db.add_documents(docs)
+    db.save_local(DB_FAISS_PATH)
 
 
 if __name__ == "__main__":

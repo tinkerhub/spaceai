@@ -6,3 +6,4 @@ env.dev.sh
 node_modules
 /repos
 .DS_Store
+role.json
