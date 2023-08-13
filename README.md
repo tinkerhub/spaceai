@@ -35,5 +35,11 @@ cp ops/.env.example ops/.env
 ```python
 python core/ingest.py
 ```
+- Create file `role.json` in `/data` folder and add the roles in the following format
+```json
+{
+   "admin": ["chat_id1", "chat_id2"],
+}
+```
 - Make changes to the code for your application
 - Run `python tele_bot.py` for testing the bot
