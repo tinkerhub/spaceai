@@ -4,7 +4,8 @@ from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
     ContextTypes, 
-    MessageHandler, 
+    MessageHandler,
+    CommandHandler, 
     filters,
 )
 from core.db import set_redis, get_redis_value
@@ -21,6 +22,10 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    await context.bot.send_message(chat_id=chat_id, text="Hey, I'm S.P.A.C.E AI! Front desk virtual assistant for Tinkerspace. You can ask me about Tinkerhub and Tinkerspace. Go to tinkerhub.org to know more about Tinkerhub :)")
 
 async def respond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
@@ -51,8 +56,10 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(token).read_timeout(30).write_timeout(30).build()
+    start_handler = CommandHandler('start', start)
     response_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), respond)
     document_handler = MessageHandler(filters.Document.PDF, handle_document)
     application.add_handler(response_handler)
     application.add_handler(document_handler)
+    application.add_handler(start_handler)
     application.run_polling()
