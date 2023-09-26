@@ -25,11 +25,9 @@ embeddings = OpenAIEmbeddings(
 with open("data/dummy-lp.json") as f:
     learning_paths = json.load(f)
 
-tinkerhub_urls = ['https://www.tinkerhub.org/',
- 'https://www.tinkerhub.org/learn',
- 'https://www.tinkerhub.org/career-initiative',
- 'https://www.tinkerhub.org/tinkerspace',
- 'https://www.tinkerhub.org/contact']
+with open("data/urls.txt") as f:
+    tinkerhub_urls = f.readlines()
+    tinkerhub_urls = [url.strip() for url in tinkerhub_urls]
 
 
 def get_tinkerhub_docs(tinkerhub_urls):
@@ -176,7 +174,5 @@ if __name__ == "__main__":
     docs = get_tinkerhub_docs(tinkerhub_urls)
     docs.extend(get_pdf_docs())
     docs.extend(get_txt_docs())
-    #url = "https://github.com/tinkerhub/maker-station"
-    #docs.extend(get_git_docs(url))
     db = create_vector_db(docs)
     db.add_texts(get_learning_path_docs(learning_paths))
